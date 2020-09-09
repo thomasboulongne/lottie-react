@@ -64,8 +64,8 @@ export interface IPlayerProps {
   renderer?: 'svg' | 'canvas' | 'html';
   speed?: number;
   src: string;
-  className: string;
-  rendererClassName: string;
+  className?: string;
+  rendererClassName?: string;
   style?: { [key: string]: string | number };
 }
 

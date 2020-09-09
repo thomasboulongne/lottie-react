@@ -1,7 +1,7 @@
 {
-  "name": "@lottiefiles/react-lottie-player",
+  "name": "@thomasboulongne/react-lottie-player",
   "version": "2.1.8",
-  "description": "Lottie web player wrapper for React",
+  "description": "Lottie web player wrapper for React - Forked from Lottiefiles' player",
   "main": "./dist/lottie-react.js",
   "module": "./dist/lottie-react.esm.js",
   "types": "./dist/src/index.d.ts",
