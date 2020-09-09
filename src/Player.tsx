@@ -55,9 +55,7 @@ export interface IPlayerProps {
   lottieRef?: (ref: AnimationItem) => void;
   onEvent?: (event: PlayerEvent) => any;
   onStateChange?: (state: PlayerState) => any;
-  onBackgroundChange?: (color: string) => void;
   autoplay: boolean;
-  background?: string;
   children?: React.ReactNode | React.ReactNode[];
   controls?: boolean;
   direction?: PlayerDirection;
@@ -66,12 +64,13 @@ export interface IPlayerProps {
   renderer?: 'svg' | 'canvas' | 'html';
   speed?: number;
   src: string;
+  className: string;
+  rendererClassName: string;
   style?: { [key: string]: string | number };
 }
 
 interface IPlayerState {
   animationData: any;
-  background: string;
   containerRef: React.Ref<HTMLDivElement> | null;
   debug?: boolean;
   instance: AnimationItem | null;
@@ -89,14 +88,6 @@ const defaultOptions: Partial<AnimationConfig> = {
 };
 
 export class Player extends React.Component<IPlayerProps, IPlayerState> {
-  public static async getDerivedStateFromProps(nextProps: any, prevState: any) {
-    if (nextProps.background !== prevState.background) {
-      return { background: nextProps.background };
-    } else {
-      return null;
-    }
-  }
-
   private container: Element | null = null;
 
   constructor(props: IPlayerProps) {
@@ -104,7 +95,6 @@ export class Player extends React.Component<IPlayerProps, IPlayerState> {
 
     this.state = {
       animationData: null,
-      background: 'transparent',
       containerRef: React.createRef(),
       debug: true,
       instance: null,
@@ -137,16 +127,15 @@ export class Player extends React.Component<IPlayerProps, IPlayerState> {
   }
 
   public render() {
-    const { children, loop, style, onBackgroundChange } = this.props;
-    const { animationData, instance, playerState, seeker, debug, background } = this.state;
+    const { children, loop, style, className, rendererClassName } = this.props;
+    const { animationData, instance, playerState, seeker, debug } = this.state;
 
     return (
-      <div>
+      <div className={className}>
         <div
-          id="lottie"
           ref={el => (this.container = el)}
+          className={rendererClassName}
           style={{
-            background,
             margin: '0 auto',
             outline: 'none',
             overflow: 'hidden',
@@ -157,7 +146,6 @@ export class Player extends React.Component<IPlayerProps, IPlayerState> {
           if (React.isValidElement(child)) {
             return React.cloneElement(child, {
               animationData,
-              background,
               debug,
               instance,
               loop,
@@ -165,13 +153,6 @@ export class Player extends React.Component<IPlayerProps, IPlayerState> {
               play: () => this.play(),
               playerState,
               seeker,
-              setBackground: (value: string) => {
-                this.setState({ background: value });
-
-                if (typeof onBackgroundChange === 'function') {
-                  onBackgroundChange(value);
-                }
-              },
               setSeeker: (f: number, p: boolean) => this.setSeeker(f, p),
               stop: () => this.stop(),
               toggleDebug: () => this.toggleDebug(),
@@ -190,7 +171,7 @@ export class Player extends React.Component<IPlayerProps, IPlayerState> {
   }
 
   private async createLottie() {
-    const { autoplay, direction, loop, lottieRef, renderer, speed, src, background } = this.props;
+    const { autoplay, direction, loop, lottieRef, renderer, speed, src } = this.props;
     const { instance } = this.state;
 
     if (!src || !this.container) {
@@ -261,10 +242,6 @@ export class Player extends React.Component<IPlayerProps, IPlayerState> {
 
       if (direction) {
         this.setPlayerDirection(direction);
-      }
-
-      if (background) {
-        this.setState({ background });
       }
 
       this.setState({ instance: newInstance }, () => {
